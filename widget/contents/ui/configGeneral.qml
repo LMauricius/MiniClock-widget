@@ -31,9 +31,10 @@ KCM.SimpleKCM {
     component SettingSlider: Slider {
         Layout.fillWidth: true
         Layout.minimumWidth: Kirigami.Units.gridUnit * 12
-        // Fine steps keep the style from drawing tick marks
         stepSize: 1
         snapMode: Slider.SnapAlways
+        // A negative tick step tells the desktop style not to draw tick marks
+        Kirigami.StyleHints.tickMarkStepSize: -1
     }
 
     Kirigami.FormLayout {
