@@ -36,8 +36,6 @@ PlasmoidItem {
     property bool showTimezone: Plasmoid.configuration.showTimezoneString
 
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
-    // With a border the face is the whole widget, so take the full panel thickness
-    Plasmoid.constraintHints: Plasmoid.configuration.showBorder ? Plasmoid.CanFillArea : Plasmoid.NoHint
     preferredRepresentation: compactRepresentation
 
     toolTipMainText: {
@@ -85,6 +83,7 @@ PlasmoidItem {
             showHourHand: Plasmoid.configuration.showHourHand
             showMinuteHand: Plasmoid.configuration.showMinuteHand
             secondsMode: Plasmoid.configuration.secondsMode
+            smoothSeconds: Plasmoid.configuration.smoothSeconds
 
             hourHandLength: Plasmoid.configuration.hourHandLength / 100
             minuteHandLength: Plasmoid.configuration.minuteHandLength / 100
@@ -97,8 +96,13 @@ PlasmoidItem {
             showBorder: Plasmoid.configuration.showBorder
             backgroundOpacity: Plasmoid.configuration.backgroundOpacity / 100
 
-            handColor: Kirigami.Theme.textColor
-            secondsColor: Plasmoid.configuration.secondsAccentColor ? Kirigami.Theme.highlightColor : Kirigami.Theme.textColor
+            readonly property bool handsAccent: Plasmoid.configuration.handsAccentColor
+
+            handColor: handsAccent ? Kirigami.Theme.highlightColor : Kirigami.Theme.textColor
+            borderColor: Kirigami.Theme.textColor
+            // Whichever of accent and critical the hands don't already use
+            secondsColor: !Plasmoid.configuration.secondsAltColor ? handColor
+                        : handsAccent ? Kirigami.Theme.negativeTextColor : Kirigami.Theme.highlightColor
             // Black behind light hands, white behind dark hands
             backgroundColor: Kirigami.ColorUtils.brightnessForColor(Kirigami.Theme.textColor) === Kirigami.ColorUtils.Light ? "black" : "white"
 

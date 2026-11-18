@@ -19,6 +19,8 @@ Item {
     property bool showMinuteHand: true
     // 0 = not shown, 1 = hand, 2 = dot at the edge
     property int secondsMode: 0
+    // Sweep the seconds continuously instead of ticking
+    property bool smoothSeconds: false
 
     // Fractions of the inner radius
     property real hourHandLength: 0.55
@@ -34,6 +36,7 @@ Item {
 
     property color handColor: "black"
     property color secondsColor: handColor
+    property color borderColor: handColor
     property color backgroundColor: "white"
 
     property bool animate: true
@@ -54,6 +57,9 @@ Item {
 
     readonly property real innerRadius: showBorder ? outerRadius - borderWidth : outerRadius
 
+    // A smooth sweep runs one second ahead, so it reaches each mark as that second starts
+    readonly property real secondsAngle: (smoothSeconds ? seconds + 1 : seconds) * 6
+
     // Background disc and border ring
     Shape {
         anchors.fill: parent
@@ -62,7 +68,7 @@ Item {
 
         ShapePath {
             fillColor: Qt.rgba(face.backgroundColor.r, face.backgroundColor.g, face.backgroundColor.b, face.backgroundOpacity)
-            strokeColor: face.showBorder ? face.handColor : "transparent"
+            strokeColor: face.showBorder ? face.borderColor : "transparent"
             strokeWidth: face.showBorder ? face.borderWidth : -1
             PathAngleArc {
                 centerX: face.width / 2
@@ -84,17 +90,18 @@ Item {
         property real thickness
         property color color
         property bool animate
+        property bool sweep
 
         anchors.fill: parent
         preferredRendererType: Shape.CurveRenderer
         rotation: angle
 
         Behavior on rotation {
-            enabled: hand.animate
+            enabled: hand.animate || hand.sweep
             RotationAnimation {
-                duration: 250
+                duration: hand.sweep ? 1000 : 250
                 direction: RotationAnimation.Clockwise
-                easing.type: Easing.OutElastic
+                easing.type: hand.sweep ? Easing.Linear : Easing.OutElastic
                 easing.overshoot: 0.5
             }
         }
@@ -134,11 +141,12 @@ Item {
 
     Hand {
         visible: face.secondsMode === 1
-        angle: face.seconds * 6
+        angle: face.secondsAngle
         length: face.innerRadius * face.secondHandLength
         thickness: face.secondWidth
         color: face.secondsColor
         animate: face.animate
+        sweep: face.smoothSeconds
     }
 
     // Seconds dot, touching the border (or the edge when there is no border)
@@ -146,14 +154,14 @@ Item {
         anchors.fill: parent
         preferredRendererType: Shape.CurveRenderer
         visible: face.secondsMode === 2
-        rotation: face.seconds * 6
+        rotation: face.secondsAngle
 
         Behavior on rotation {
-            enabled: face.animate
+            enabled: face.animate || face.smoothSeconds
             RotationAnimation {
-                duration: 250
+                duration: face.smoothSeconds ? 1000 : 250
                 direction: RotationAnimation.Clockwise
-                easing.type: Easing.OutElastic
+                easing.type: face.smoothSeconds ? Easing.Linear : Easing.OutElastic
                 easing.overshoot: 0.5
             }
         }

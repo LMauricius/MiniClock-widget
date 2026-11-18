@@ -15,7 +15,9 @@ KCM.SimpleKCM {
     property alias cfg_showHourHand: showHourHandCheckBox.checked
     property alias cfg_showMinuteHand: showMinuteHandCheckBox.checked
     property alias cfg_secondsMode: secondsModeComboBox.currentIndex
-    property alias cfg_secondsAccentColor: secondsAccentCheckBox.checked
+    property alias cfg_handsAccentColor: handsAccentCheckBox.checked
+    property alias cfg_secondsAltColor: secondsAltColorCheckBox.checked
+    property alias cfg_smoothSeconds: smoothSecondsCheckBox.checked
     property alias cfg_hourHandLength: hourHandLengthSlider.value
     property alias cfg_minuteHandLength: minuteHandLengthSlider.value
     property alias cfg_secondHandLength: secondHandLengthSlider.value
@@ -45,15 +47,24 @@ KCM.SimpleKCM {
             id: showMinuteHandCheckBox
             text: i18n("Show minutes")
         }
+        CheckBox {
+            id: handsAccentCheckBox
+            text: i18n("Accent color")
+        }
         ComboBox {
             id: secondsModeComboBox
             Kirigami.FormData.label: i18n("Seconds:")
             model: [i18n("Don't show"), i18n("Hand"), i18n("Dot")]
         }
         CheckBox {
-            id: secondsAccentCheckBox
+            id: secondsAltColorCheckBox
             enabled: secondsModeComboBox.currentIndex !== 0
-            text: i18n("Accent color")
+            text: i18n("Alternative color")
+        }
+        CheckBox {
+            id: smoothSecondsCheckBox
+            enabled: secondsModeComboBox.currentIndex !== 0
+            text: i18n("Smooth")
         }
 
         Kirigami.Separator {
