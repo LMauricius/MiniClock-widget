@@ -123,6 +123,8 @@ Item {
 
     Hand {
         visible: face.showHourHand
+        // Keep the seconds hand and dot underneath
+        z: 1
         angle: (face.hours % 12) * 30 + face.minutes / 2
         length: face.innerRadius * face.hourHandLength
         thickness: face.hourWidth
@@ -132,6 +134,8 @@ Item {
 
     Hand {
         visible: face.showMinuteHand
+        // Keep the seconds hand and dot underneath
+        z: 1
         angle: face.minutes * 6
         length: face.innerRadius * face.minuteHandLength
         thickness: face.minuteWidth
