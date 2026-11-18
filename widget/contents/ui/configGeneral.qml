@@ -24,6 +24,7 @@ KCM.SimpleKCM {
     property alias cfg_handThickness: handThicknessSlider.value
     property alias cfg_showBorder: showBorderCheckBox.checked
     property alias cfg_borderThickness: borderThicknessSlider.value
+    property alias cfg_borderPadding: borderPaddingSlider.value
     property alias cfg_backgroundOpacity: backgroundOpacitySlider.value
     property alias cfg_showTimezoneString: showTimezoneCheckBox.checked
 
@@ -108,6 +109,12 @@ KCM.SimpleKCM {
             Kirigami.FormData.label: i18n("Border size:")
             enabled: showBorderCheckBox.checked || secondsModeComboBox.currentIndex === 2
             from: 0; to: 100
+        }
+        SettingSlider {
+            id: borderPaddingSlider
+            Kirigami.FormData.label: i18n("Spacing:")
+            enabled: showBorderCheckBox.checked
+            from: 0; to: 25
         }
         SettingSlider {
             id: backgroundOpacitySlider

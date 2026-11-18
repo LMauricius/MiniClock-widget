@@ -35,6 +35,17 @@ PlasmoidItem {
     property bool showSeconds: Plasmoid.configuration.secondsMode !== 0
     property bool showTimezone: Plasmoid.configuration.showTimezoneString
 
+    // Blend amount of b into a
+    function mix(a: color, b: color, amount: real): color {
+        return Qt.rgba(a.r + (b.r - a.r) * amount, a.g + (b.g - a.g) * amount, a.b + (b.b - a.b) * amount, 1);
+    }
+
+    // Scale the channels so the largest one is at full intensity
+    function brightest(c: color): color {
+        const top = Math.max(c.r, c.g, c.b);
+        return top > 0 ? Qt.rgba(c.r / top, c.g / top, c.b / top, 1) : c;
+    }
+
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
     preferredRepresentation: compactRepresentation
 
@@ -71,10 +82,15 @@ PlasmoidItem {
             id: clock
 
             anchors {
+                left: parent.left
+                right: parent.right
                 top: parent.top
                 bottom: analogclock.showTimezone ? timezoneBg.top : parent.bottom
+                // The panel gives the widget no margins, so keep the border off its edges
+                margins: Plasmoid.configuration.showBorder
+                         ? Math.round(Math.min(representation.width, representation.height) * Plasmoid.configuration.borderPadding / 100)
+                         : 0
             }
-            width: parent.width
 
             hours: analogclock.hours
             minutes: analogclock.minutes
@@ -98,11 +114,12 @@ PlasmoidItem {
 
             readonly property bool handsAccent: Plasmoid.configuration.handsAccentColor
 
-            handColor: handsAccent ? Kirigami.Theme.highlightColor : Kirigami.Theme.textColor
+            handColor: handsAccent ? analogclock.mix(Kirigami.Theme.highlightColor, Kirigami.Theme.textColor, 0.33) : Kirigami.Theme.textColor
             borderColor: Kirigami.Theme.textColor
             // Whichever of accent and critical the hands don't already use
             secondsColor: !Plasmoid.configuration.secondsAltColor ? handColor
-                        : handsAccent ? Kirigami.Theme.negativeTextColor : Kirigami.Theme.highlightColor
+                        : analogclock.mix(analogclock.brightest(handsAccent ? Kirigami.Theme.negativeTextColor : Kirigami.Theme.highlightColor),
+                                          Kirigami.Theme.textColor, 0.15)
             // Black behind light hands, white behind dark hands
             backgroundColor: Kirigami.ColorUtils.brightnessForColor(Kirigami.Theme.textColor) === Kirigami.ColorUtils.Light ? "black" : "white"
 

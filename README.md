@@ -37,4 +37,5 @@ git -C upstream/plasma-workspace sparse-checkout set applets/analog-clock
 - The minute and seconds hands are 40% and 20% as wide as the hour hand.
 - The seconds dot is 3x the border thickness (at least 1.5 pt) and touches the border.
 - Hand lengths are a percentage of the radius inside the border. At 100% a hand reaches the border.
-- The panel keeps its usual margins around the clock, with or without the border.
+- With the border on, the clock leaves a gap on each side (the Spacing setting, a percentage of
+  the widget's thickness), since thin panels give widgets no margins of their own.

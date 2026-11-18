@@ -53,6 +53,11 @@
     <entry name="borderThickness" type="Int">
       <default>25</default>
     </entry>
+    <!-- Space around the bordered clock on each side, in percent of the widget's
+         smaller dimension. Only used with the border on. -->
+    <entry name="borderPadding" type="Int">
+      <default>10</default>
+    </entry>
 
     <!-- 0 = transparent, 100 = opaque black/white (contrasting the hands) -->
     <entry name="backgroundOpacity" type="Int">
