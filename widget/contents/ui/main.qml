@@ -2,6 +2,7 @@
     SPDX-FileCopyrightText: 2012 Viranch Mehta <viranch.mehta@gmail.com>
     SPDX-FileCopyrightText: 2012 Marco Martin <mart@kde.org>
     SPDX-FileCopyrightText: 2013-2023 David Edmundson <davidedmundson@kde.org>
+    SPDX-FileCopyrightText: 2026 Mauricio <mauriciosmit100@gmail.com>
 
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
@@ -31,10 +32,12 @@ PlasmoidItem {
     property int hours: clockSource.dateTime.getHours()
     property int minutes: clockSource.dateTime.getMinutes()
     property int seconds: clockSource.dateTime.getSeconds()
-    property bool showSecondsHand: Plasmoid.configuration.showSecondHand
+    property bool showSeconds: Plasmoid.configuration.secondsMode !== 0
     property bool showTimezone: Plasmoid.configuration.showTimezoneString
 
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
+    // With a border the face is the whole widget, so take the full panel thickness
+    Plasmoid.constraintHints: Plasmoid.configuration.showBorder ? Plasmoid.CanFillArea : Plasmoid.NoHint
     preferredRepresentation: compactRepresentation
 
     toolTipMainText: {
@@ -45,7 +48,7 @@ PlasmoidItem {
 
     Clock {
         id: clockSource
-        trackSeconds: analogclock.showSecondsHand || (analogclock.compactRepresentationItem as MouseArea).containsMouse
+        trackSeconds: analogclock.showSeconds || (analogclock.compactRepresentationItem as MouseArea).containsMouse
     }
 
     compactRepresentation: MouseArea {
@@ -66,43 +69,7 @@ PlasmoidItem {
         onPressed: wasExpanded = analogclock.expanded
         onClicked: analogclock.expanded = !wasExpanded
 
-        KSvg.Svg {
-            id: clockSvg
-
-            property double naturalHorizontalHandShadowOffset: estimateHorizontalHandShadowOffset()
-            property double naturalVerticalHandShadowOffset: estimateVerticalHandShadowOffset()
-
-            imagePath: "widgets/clock"
-            function estimateHorizontalHandShadowOffset() {
-                var id = "hint-hands-shadow-offset-to-west";
-                if (hasElement(id)) {
-                    return -elementSize(id).width;
-                }
-                id = "hint-hands-shadows-offset-to-east";
-                if (hasElement(id)) {
-                    return elementSize(id).width;
-                }
-                return 0;
-            }
-            function estimateVerticalHandShadowOffset() {
-                var id = "hint-hands-shadow-offset-to-north";
-                if (hasElement(id)) {
-                    return -elementSize(id).height;
-                }
-                id = "hint-hands-shadow-offset-to-south";
-                if (hasElement(id)) {
-                    return elementSize(id).height;
-                }
-                return 0;
-            }
-
-            onRepaintNeeded: {
-                naturalHorizontalHandShadowOffset = estimateHorizontalHandShadowOffset();
-                naturalVerticalHandShadowOffset = estimateVerticalHandShadowOffset();
-            }
-        }
-
-        Item {
+        ClockFace {
             id: clock
 
             anchors {
@@ -111,91 +78,31 @@ PlasmoidItem {
             }
             width: parent.width
 
-            readonly property double svgScale: face.width / face.naturalSize.width
-            readonly property double horizontalShadowOffset:
-                Math.round(clockSvg.naturalHorizontalHandShadowOffset * svgScale) + Math.round(clockSvg.naturalHorizontalHandShadowOffset * svgScale) % 2
-            readonly property double verticalShadowOffset:
-                Math.round(clockSvg.naturalVerticalHandShadowOffset * svgScale) + Math.round(clockSvg.naturalVerticalHandShadowOffset * svgScale) % 2
+            hours: analogclock.hours
+            minutes: analogclock.minutes
+            seconds: analogclock.seconds
 
-            KSvg.SvgItem {
-                id: face
-                anchors.centerIn: parent
-                width: Math.min(parent.width, parent.height)
-                height: Math.min(parent.width, parent.height)
-                svg: clockSvg
-                elementId: "ClockFace"
-            }
+            showHourHand: Plasmoid.configuration.showHourHand
+            showMinuteHand: Plasmoid.configuration.showMinuteHand
+            secondsMode: Plasmoid.configuration.secondsMode
 
-            Hand {
-                svg: clockSvg
-                elementId: "HourHandShadow"
-                rotationCenterHintId: "hint-hourhandshadow-rotation-center-offset"
-                horizontalRotationOffset: clock.horizontalShadowOffset
-                verticalRotationOffset: clock.verticalShadowOffset
-                handRotation: 180 + analogclock.hours * 30 + (analogclock.minutes/2)
-                svgScale: clock.svgScale
-            }
-            Hand {
-                svg: clockSvg
-                elementId: "HourHand"
-                rotationCenterHintId: "hint-hourhand-rotation-center-offset"
-                handRotation: 180 + analogclock.hours * 30 + (analogclock.minutes/2)
-                svgScale: clock.svgScale
-            }
+            hourHandLength: Plasmoid.configuration.hourHandLength / 100
+            minuteHandLength: Plasmoid.configuration.minuteHandLength / 100
+            secondHandLength: Plasmoid.configuration.secondHandLength / 100
 
-            Hand {
-                svg: clockSvg
-                elementId: "MinuteHandShadow"
-                rotationCenterHintId: "hint-minutehandshadow-rotation-center-offset"
-                horizontalRotationOffset: clock.horizontalShadowOffset
-                verticalRotationOffset: clock.verticalShadowOffset
-                handRotation: 180 + analogclock.minutes * 6
-                svgScale: clock.svgScale
-            }
-            Hand {
-                svg: clockSvg
-                elementId: "MinuteHand"
-                rotationCenterHintId: "hint-minutehand-rotation-center-offset"
-                handRotation: 180 + analogclock.minutes * 6
-                svgScale: clock.svgScale
-            }
+            // Stored in tenths of a percent of the diameter
+            hourHandThickness: Plasmoid.configuration.handThickness / 1000
+            borderThickness: Plasmoid.configuration.borderThickness / 1000
 
-            Hand {
-                svg: clockSvg
-                visible: analogclock.showSecondsHand
-                elementId: "SecondHandShadow"
-                rotationCenterHintId: "hint-secondhandshadow-rotation-center-offset"
-                horizontalRotationOffset: clock.horizontalShadowOffset
-                verticalRotationOffset: clock.verticalShadowOffset
-                handRotation: 180 + analogclock.seconds * 6
-                svgScale: clock.svgScale
-            }
-            Hand {
-                svg: clockSvg
-                visible: analogclock.showSecondsHand
-                elementId: "SecondHand"
-                rotationCenterHintId: "hint-secondhand-rotation-center-offset"
-                handRotation: 180 + analogclock.seconds * 6
-                svgScale: clock.svgScale
-            }
+            showBorder: Plasmoid.configuration.showBorder
+            backgroundOpacity: Plasmoid.configuration.backgroundOpacity / 100
 
-            KSvg.SvgItem {
-                id: center
-                anchors.centerIn: clock
-                width: naturalSize.width * clock.svgScale
-                height: naturalSize.height * clock.svgScale
-                svg: clockSvg
-                elementId: "HandCenterScrew"
-                z: 1000
-            }
+            handColor: Kirigami.Theme.textColor
+            secondsColor: Plasmoid.configuration.secondsAccentColor ? Kirigami.Theme.highlightColor : Kirigami.Theme.textColor
+            // Black behind light hands, white behind dark hands
+            backgroundColor: Kirigami.ColorUtils.brightnessForColor(Kirigami.Theme.textColor) === Kirigami.ColorUtils.Light ? "black" : "white"
 
-            KSvg.SvgItem {
-                anchors.fill: face
-                width: naturalSize.width * clock.svgScale
-                height: naturalSize.height * clock.svgScale
-                svg: clockSvg
-                elementId: "Glass"
-            }
+            animate: Kirigami.Units.longDuration > 1
         }
 
         KSvg.FrameSvgItem {

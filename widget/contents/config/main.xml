@@ -6,9 +6,52 @@
   <kcfgfile name=""/>
 
   <group name="General">
-    <entry name="showSecondHand" type="Bool">
+    <entry name="showHourHand" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="showMinuteHand" type="Bool">
+      <default>true</default>
+    </entry>
+    <!-- 0 = not shown, 1 = hand, 2 = dot at the edge -->
+    <entry name="secondsMode" type="Int">
+      <default>0</default>
+    </entry>
+    <entry name="secondsAccentColor" type="Bool">
       <default>false</default>
     </entry>
+
+    <!-- Hand lengths, in percent of the inner radius -->
+    <entry name="hourHandLength" type="Int">
+      <default>55</default>
+    </entry>
+    <entry name="minuteHandLength" type="Int">
+      <default>90</default>
+    </entry>
+    <entry name="secondHandLength" type="Int">
+      <default>95</default>
+    </entry>
+
+    <!-- Hour hand width, in percent of the clock diameter (tenths of a percent).
+         Minute hand is 0.4x and seconds hand 0.2x of it. Never thinner than
+         2.5pt / 1pt / 0.5pt; 0 means always use those minimums. -->
+    <entry name="handThickness" type="Int">
+      <default>80</default>
+    </entry>
+
+    <entry name="showBorder" type="Bool">
+      <default>true</default>
+    </entry>
+    <!-- Border width, in percent of the clock diameter (tenths of a percent).
+         Never thinner than 0.5pt. The seconds dot is 3x this (min 1.5pt). -->
+    <entry name="borderThickness" type="Int">
+      <default>25</default>
+    </entry>
+
+    <!-- 0 = transparent, 100 = opaque black/white (contrasting the hands) -->
+    <entry name="backgroundOpacity" type="Int">
+      <default>0</default>
+    </entry>
+
     <entry name="showTimezoneString" type="Bool">
       <default>false</default>
     </entry>
