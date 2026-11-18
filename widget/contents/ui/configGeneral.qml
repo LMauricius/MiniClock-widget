@@ -25,86 +25,64 @@ KCM.SimpleKCM {
     property alias cfg_backgroundOpacity: backgroundOpacitySlider.value
     property alias cfg_showTimezoneString: showTimezoneCheckBox.checked
 
-    component ValueSlider: RowLayout {
-        property alias from: slider.from
-        property alias to: slider.to
-        property alias stepSize: slider.stepSize
-        property alias value: slider.value
-        property string valueText
-
-        Slider {
-            id: slider
-            Layout.fillWidth: true
-            Layout.minimumWidth: Kirigami.Units.gridUnit * 10
-            snapMode: Slider.SnapAlways
-        }
-        Label {
-            Layout.minimumWidth: Kirigami.Units.gridUnit * 5
-            text: parent.valueText
-        }
-    }
-
-    // Thickness settings are stored in tenths of a percent of the clock diameter
-    function thicknessText(value: real, minimum: string): string {
-        return value === 0 ? i18nc("@item:valuesuffix", "Minimum (%1)", minimum)
-                           : i18nc("@item:valuesuffix percent of clock size", "%1%", (value / 10).toLocaleString(Qt.locale(), 'f', 1));
+    component SettingSlider: Slider {
+        Layout.fillWidth: true
+        Layout.minimumWidth: Kirigami.Units.gridUnit * 12
+        // Fine steps keep the style from drawing tick marks
+        stepSize: 1
+        snapMode: Slider.SnapAlways
     }
 
     Kirigami.FormLayout {
+        wideMode: true
+
         CheckBox {
             id: showHourHandCheckBox
             Kirigami.FormData.label: i18n("Hands:")
-            text: i18n("Show hour hand")
+            text: i18n("Show hours")
         }
         CheckBox {
             id: showMinuteHandCheckBox
-            text: i18n("Show minute hand")
+            text: i18n("Show minutes")
         }
         ComboBox {
             id: secondsModeComboBox
             Kirigami.FormData.label: i18n("Seconds:")
-            model: [i18n("Not shown"), i18n("Show hand"), i18n("Show dot at the edge")]
+            model: [i18n("Don't show"), i18n("Hand"), i18n("Dot")]
         }
         CheckBox {
             id: secondsAccentCheckBox
             enabled: secondsModeComboBox.currentIndex !== 0
-            text: i18n("Use accent color for seconds")
+            text: i18n("Accent color")
         }
 
-        Item { Kirigami.FormData.isSection: true }
+        Kirigami.Separator {
+            Kirigami.FormData.isSection: true
+            Kirigami.FormData.label: i18n("Look")
+        }
 
-        ValueSlider {
+        SettingSlider {
             id: hourHandLengthSlider
-            Kirigami.FormData.label: i18n("Hour hand length:")
+            Kirigami.FormData.label: i18n("Hour hand:")
             enabled: showHourHandCheckBox.checked
-            from: 10; to: 100; stepSize: 1
-            valueText: i18nc("@item:valuesuffix percent of radius", "%1%", value)
+            from: 10; to: 100
         }
-        ValueSlider {
+        SettingSlider {
             id: minuteHandLengthSlider
-            Kirigami.FormData.label: i18n("Minute hand length:")
+            Kirigami.FormData.label: i18n("Minute hand:")
             enabled: showMinuteHandCheckBox.checked
-            from: 10; to: 100; stepSize: 1
-            valueText: i18nc("@item:valuesuffix percent of radius", "%1%", value)
+            from: 10; to: 100
         }
-        ValueSlider {
+        SettingSlider {
             id: secondHandLengthSlider
-            Kirigami.FormData.label: i18n("Seconds hand length:")
+            Kirigami.FormData.label: i18n("Seconds hand:")
             enabled: secondsModeComboBox.currentIndex === 1
-            from: 10; to: 100; stepSize: 1
-            valueText: i18nc("@item:valuesuffix percent of radius", "%1%", value)
+            from: 10; to: 100
         }
-        ValueSlider {
+        SettingSlider {
             id: handThicknessSlider
             Kirigami.FormData.label: i18n("Hand thickness:")
-            from: 0; to: 200; stepSize: 5
-            valueText: thicknessText(value, i18nc("@item:valuesuffix", "2.5 pt"))
-        }
-        Label {
-            Layout.fillWidth: true
-            wrapMode: Text.Wrap
-            font: Kirigami.Theme.smallFont
-            text: i18n("Hour hand width, relative to the clock size. The minute and seconds hands are 40% and 20% of it. Never thinner than 2.5, 1 and 0.5 points.")
+            from: 0; to: 200
         }
 
         Item { Kirigami.FormData.isSection: true }
@@ -112,35 +90,26 @@ KCM.SimpleKCM {
         CheckBox {
             id: showBorderCheckBox
             Kirigami.FormData.label: i18n("Border:")
-            text: i18n("Show border (fills the whole panel height)")
+            text: i18n("Show")
         }
-        ValueSlider {
+        SettingSlider {
             id: borderThicknessSlider
-            Kirigami.FormData.label: i18n("Border thickness:")
+            Kirigami.FormData.label: i18n("Border size:")
             enabled: showBorderCheckBox.checked || secondsModeComboBox.currentIndex === 2
-            from: 0; to: 100; stepSize: 5
-            valueText: thicknessText(value, i18nc("@item:valuesuffix", "0.5 pt"))
+            from: 0; to: 100
         }
-        Label {
-            Layout.fillWidth: true
-            wrapMode: Text.Wrap
-            font: Kirigami.Theme.smallFont
-            text: i18n("Relative to the clock size, never thinner than 0.5 points. The seconds dot is three times this size.")
-        }
-
-        ValueSlider {
+        SettingSlider {
             id: backgroundOpacitySlider
             Kirigami.FormData.label: i18n("Background opacity:")
-            from: 0; to: 100; stepSize: 5
-            valueText: value === 0 ? i18n("Transparent") : i18nc("@item:valuesuffix percent", "%1%", value)
+            from: 0; to: 100
         }
 
         Item { Kirigami.FormData.isSection: true }
 
         CheckBox {
             id: showTimezoneCheckBox
-            Kirigami.FormData.label: i18n("General:")
-            text: i18n("Show time zone")
+            Kirigami.FormData.label: i18n("Time zone:")
+            text: i18n("Show")
         }
     }
 }
