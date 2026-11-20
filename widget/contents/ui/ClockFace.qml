@@ -45,6 +45,7 @@ Item {
     readonly property real minMinuteWidth: 1
     readonly property real minSecondWidth: 0.5
     readonly property real minBorderWidth: 0.5
+    readonly property real minDotDiameter: 2.5
 
     readonly property real diameter: Math.min(width, height)
     readonly property real outerRadius: diameter / 2
@@ -53,7 +54,7 @@ Item {
     readonly property real minuteWidth: Math.max(minMinuteWidth, hourWidth * 0.4)
     readonly property real secondWidth: Math.max(minSecondWidth, hourWidth * 0.2)
     readonly property real borderWidth: Math.max(minBorderWidth, diameter * borderThickness)
-    readonly property real dotDiameter: borderWidth * 3
+    readonly property real dotDiameter: Math.max(minDotDiameter, borderWidth * 3)
 
     readonly property real innerRadius: showBorder ? outerRadius - borderWidth : outerRadius
 

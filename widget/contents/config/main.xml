@@ -49,7 +49,7 @@
       <default>true</default>
     </entry>
     <!-- Border width, in percent of the clock diameter (tenths of a percent).
-         Never thinner than 0.5pt. The seconds dot is 3x this (min 1.5pt). -->
+        Never thinner than 0.5pt. The seconds dot is 3x this (min 2.5pt). -->
     <entry name="borderThickness" type="Int">
       <default>25</default>
     </entry>
